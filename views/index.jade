@@ -1,0 +1,42 @@
+extends layout
+
+block content
+  //Include new tweet bar
+  include ./partials/_newTweet.jade
+  
+  .bounds.app--body
+      .app--section--header
+          .grid-33
+              .app--section--heading
+                  h2 Timeline
+          .grid-33
+              .app--section--heading
+                  strong 129
+                  h2 Following
+          .grid-33
+              .app--section--heading
+                  h2 Direct Messages
+      .grid-33
+          .app--section
+              ul.app--tweet--list
+                  //Here there be tweets
+                  //include the tweets
+                  include ./partials/_tweet.jade
+      .grid-33
+          .app--section
+              ul.app--user--list
+                  //Here there be friends :D
+                  //include the friends
+                  include ./partials/_friend.jade
+                  
+      .grid-33
+          .app--section
+              ul.app--message--list
+                  li
+                      h3
+                          | Conversation with 
+                          a Jill Spore
+                      ul.app--message--conversation
+                          //Here there be messages arghh
+                          //include one message
+                          include ./partials/_message.jade

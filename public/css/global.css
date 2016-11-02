@@ -2165,7 +2165,7 @@ body {
 }
 /* line 42, ../sass/global.sass */
 .app--body .grid-33 {
-  padding: 0;
+  padding: 0 0 195px 0;
   height: 100%;
 }
 /* line 46, ../sass/global.sass */
@@ -2180,6 +2180,7 @@ body {
 }
 /* line 53, ../sass/global.sass */
 .app--section--header {
+  max-height: 63px;
   position: fixed;
   top: 65px;
   right: 0;
