@@ -1,6 +1,16 @@
 extends layout
 
 block content
-  h1= message
-  h2= error.status
-  pre #{error.stack}
+  h1 Error
+  h3 There seems to have happende an error when you tried to log into the Twitter Client 
+  | This could have happende because of an error on the server, or because twitter has a problem.
+  |  Please try again later, and if the problem persist contact the development team 
+  
+  p
+  p Send this information to the development team:  
+  if data.message !== 'undefined'
+    p #{data.message}
+  else if error.status !== 'undefined'
+    p #{error.status}
+  else 
+    p Nothing to report

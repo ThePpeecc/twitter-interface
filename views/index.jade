@@ -1,6 +1,8 @@
 extends layout
 
 block content
+  //Include the header
+  include ./partials/_header.jade
   //Include new tweet bar
   include ./partials/_newTweet.jade
   
@@ -11,7 +13,7 @@ block content
                   h2 Timeline
           .grid-33
               .app--section--heading
-                  strong 129
+                  strong #{user.friends_count}
                   h2 Following
           .grid-33
               .app--section--heading
@@ -21,22 +23,27 @@ block content
               ul.app--tweet--list
                   //Here there be tweets
                   //include the tweets
-                  include ./partials/_tweet.jade
+                  each tweet in tweets
+                    unless tweet == 'undefined'
+                      include ./partials/_tweet.jade
       .grid-33
           .app--section
               ul.app--user--list
                   //Here there be friends :D
                   //include the friends
-                  include ./partials/_friend.jade
-                  
+                  each friend in friends
+                    unless friend == "undefined"
+                      include ./partials/_friend.jade
       .grid-33
           .app--section
               ul.app--message--list
                   li
                       h3
                           | Conversation with 
-                          a Jill Spore
+                          a(href='https://twitter.com/' + recipient.screen_name) #{recipient.name}
                       ul.app--message--conversation
                           //Here there be messages arghh
                           //include one message
-                          include ./partials/_message.jade
+                          each message in messages
+                            include ./partials/_message.jade
+     include ./partials/_getJSScripts.jade

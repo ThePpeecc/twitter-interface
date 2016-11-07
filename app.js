@@ -1,58 +1,49 @@
-var express = require('express');
-var path = require('path');
-var logger = require('morgan');
-var cookieParser = require('cookie-parser');
-var bodyParser = require('body-parser');
+/**
+ * This file holds the server and route functionality
+ *
+ * @summary   The module holds the route and server functionality, it also is the place where we render the jade files
+ *
+ * @since     07.11.2016
+ * @requires Node.js, twitter.js, express & moment
+ * @NOTE     [For devs only this module also uses eslint for code quality]
+ **/
 
-var routes = require('./routes/index');
-var users = require('./routes/users');
+//We get our required module
+var express = require('express')
+var twitter = require('./twitter')
 
-var app = express();
+var app = express()
 
-// view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
+//We setup our static server
+app.use('/static', express.static(__dirname + '/public'))
 
-// uncomment after placing your favicon in /public
-app.use(logger('dev'));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
+//We specifi where to find our templates
+app.set('view engine', 'jade')
+app.set('views', __dirname + '/views')
 
-app.use('/', routes);
-app.use('/users', users);
+//We add the moment module under the app.locals, so that we can access the module in jade
+app.locals.moment = require('moment')
 
-// catch 404 and forward to error handler
-app.use(function(req, res, next) {
-  var err = new Error('Not Found');
-  err.status = 404;
-  next(err);
-});
+/* GET home page. */
+app.get('/', function(req, res) {
 
-// error handlers
+    twitter.getInfo(function(tweets, friends, message, user, recipient) { //We call the getInfo function to get the basic information for the user
+        res.render('index', { //We render the index because the information was retrived successfully
+            tweets: tweets,
+            friends: friends,
+            messages: message,
+            user: user,
+            recipient: recipient
+        })
+    }, function(err, data) {
+        res.render('error', { //We render the error page, since we got an error
+            error: err,
+            data: data
+        })
+    })
+})
 
-// development error handler
-// will print stacktrace
-if (app.get('env') === 'development') {
-  app.use(function(err, req, res, next) {
-    res.status(err.status || 500);
-    res.render('error', {
-      message: err.message,
-      error: err
-    });
-  });
-}
-
-// production error handler
-// no stacktraces leaked to user
-app.use(function(err, req, res, next) {
-  res.status(err.status || 500);
-  res.render('error', {
-    message: err.message,
-    error: {}
-  });
-});
-
-
-module.exports = app;
+/* We set the server to litsten at 127.0.0.1:3000 */
+app.listen(3000, function() {
+    console.log('App listening at 127.0.0.1:3000')
+})

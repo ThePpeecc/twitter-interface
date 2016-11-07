@@ -2186,7 +2186,7 @@ body {
   right: 0;
   left: 0;
   background: #fafafa;
-  z-index: 2;
+  z-index: -1;
   border-bottom: 1px solid #e1e1e1;
 }
 /* line 62, ../sass/global.sass */
