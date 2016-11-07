@@ -13,7 +13,6 @@ var twitter = require('twit')
 var arraySort = require('array-sort')
 var moment = require('moment')
 
-
 //Get twitter authentications keys
 var credentials = require('./credentials.json')
 
@@ -25,20 +24,25 @@ var twitterStream = new twitter({
     access_token_secret: credentials.twitter_access_token_secret
 })
 
-//var stream = twitterStream.stream('user', { stringify_friend_ids: true })
-
-/**
- stream.on('tweet', function (tweet) {
-   console.log(tweet.text)
-   //...
- })
- */
-
+//We setup the stream part of the twit module
+var stream = twitterStream.stream('user', { stringify_friend_ids: true })
 
 //This varaible holds a function that is passed to this module when you use the function getInfo, errorReporter uses this function when an error orccures
-//The function that it holds is in this project used to serve an error page
-var errorPage
+//The function that it holds is in this project used to serve an error page,
+//newTweet serves the same purpose as errorPage, just when we recive a new tweet
+var errorPage, newTweet = function() {}
 
+/**
+ * We send a tweet to the app.js via newTweet, wich serves the tweet to the client
+ *
+ * @param  {object} tweet A tweet object from the twitter api
+ * @return {nil}          We don't return anything
+ */
+var sendTweet = function (tweet) {
+    newTweet(tweet)//We got a new tweet, so we activate our newTweet callBack
+}
+
+stream.on('tweet', sendTweet) //We got a tweet
 
 /**
  * This function is called when there is a networking error in any of the different functions
@@ -164,8 +168,9 @@ function getUserInfo(callBack) {
  * @param  {function} error    This is the error callBack function, this funciton is called if there happends an error in any of the twitter funcitons
  * @return {nil}               We don't return anything
  */
-var getInfo = function(callBack, error) {
+var getInfo = function(callBack, error, tweet) {
     errorPage = error //We assing the error function to the global errorPage varialbe
+    newTweet = tweet //We assing the tweet funtion to the newTweet varaible
     var tweets, friends, messages, user, recipient
     //We pretty much just go through all of the function one after the other
     getTweets(5, function(t) {
@@ -184,5 +189,15 @@ var getInfo = function(callBack, error) {
     })
 }
 
+/**
+ * Sends a tweet to twitter
+ * @param  {string} message The message of the tweet
+ * @return {nil}            We don't return anything
+ */
+var tweet = function(message) {
+    twitterStream.post('statuses/update', {status: message})//We send the tweet
+}
+
 //Here we assing our exports
 exports.getInfo = getInfo
+exports.tweet = tweet

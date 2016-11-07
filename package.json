@@ -10,9 +10,11 @@
   },
   "dependencies": {
     "array-sort": "^0.1.2",
+    "body-parser": "^1.15.2",
     "express": "~4.13.4",
     "jade": "^1.11.0",
     "moment": "^2.15.2",
+    "socket.io": "^1.5.1",
     "twit": "^2.2.5"
   }
 }

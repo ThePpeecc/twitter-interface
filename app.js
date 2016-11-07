@@ -4,18 +4,24 @@
  * @summary   The module holds the route and server functionality, it also is the place where we render the jade files
  *
  * @since     07.11.2016
- * @requires Node.js, twitter.js, express & moment
+ * @requires Node.js, twitter.js, socket.io, express & moment
  * @NOTE     [For devs only this module also uses eslint for code quality]
  **/
 
 //We get our required module
 var express = require('express')
 var twitter = require('./twitter')
+var bodyParser = require('body-parser')
+var Server = require('socket.io')
 
 var app = express()
 
 //We setup our static server
 app.use('/static', express.static(__dirname + '/public'))
+
+//Set up the bodyParser so we can get the post data
+app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({extended: true}))
 
 //We specifi where to find our templates
 app.set('view engine', 'jade')
@@ -23,6 +29,9 @@ app.set('views', __dirname + '/views')
 
 //We add the moment module under the app.locals, so that we can access the module in jade
 app.locals.moment = require('moment')
+
+/* We set the server to litsten at 127.0.0.1:3000 and open up the socket*/
+var io = new Server(app.listen(3000))
 
 /* GET home page. */
 app.get('/', function(req, res) {
@@ -40,10 +49,16 @@ app.get('/', function(req, res) {
             error: err,
             data: data
         })
+    }, function(tweet) {
+        app.render('./partials/_tweet', {tweet: tweet}, function(err, html) {//We render a new tweet
+            io.emit('tweet', html) //and send it to the client
+        })
+
     })
 })
 
-/* We set the server to litsten at 127.0.0.1:3000 */
-app.listen(3000, function() {
-    console.log('App listening at 127.0.0.1:3000')
+/* Here we recive a post request to send a tweet */
+app.post('/tweet', function(req, res) {
+    twitter.tweet(req.body.text)//We send the tweet
+    res.send('')//And give a response
 })
